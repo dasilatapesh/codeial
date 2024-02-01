@@ -3,7 +3,8 @@ const express = require('express');
 const app = express();
 
 const port = process.env.PORT || 8000 ;
-
+//USE EXPRESS ROUTER
+app.use('/', require('./routes')); //automatically fetches index.js
 
 app.listen(port, function(err) {
     if(err) {
