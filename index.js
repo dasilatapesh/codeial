@@ -6,7 +6,9 @@ const port = process.env.PORT || 8000 ;
 //USE EXPRESS ROUTER
 app.use('/', require('./routes')); //automatically fetches index.js
 
-
+//SET UP THE VIEW ENGINE
+app.set('view engine', 'ejs');
+app.set('views', './views');
 
 app.listen(port, function(err) {
     if(err) {
