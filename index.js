@@ -3,6 +3,11 @@ const express = require('express');
 const app = express();
 
 const port = process.env.PORT || 8000 ;
+
+const expressLayouts = require('express-ejs-layouts');
+
+app.use(expressLayouts);
+
 //USE EXPRESS ROUTER
 app.use('/', require('./routes')); //automatically fetches index.js
 
