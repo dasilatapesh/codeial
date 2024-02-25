@@ -1,5 +1,12 @@
 
 
     <h1>Codeial / users / <%= title %></h1>
-
-   
+    <% if(userPost.length > 0) { %> 
+        <ul>
+            <% userPost.forEach(post => { %>
+                <li><%= post %></li> 
+            <% }); %>
+        </ul>
+    <% } else { %>
+        <p>No posts found</p>
+    <% } %>
