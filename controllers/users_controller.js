@@ -1,5 +1,5 @@
 const userSchema = require("../models/user");
-
+const Posts = require("../models/posts.js");
 module.exports.profile = function(req, res){
     return res.render('profile', {
         title: "ProfileCodeial",
