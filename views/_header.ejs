@@ -1,3 +1,15 @@
 <header>
-    Page Header
+    <ul>
+        <% if(locals.user) { %>
+            <li>Hey! <%= user.name %></li>
+            <li><button><a href="/users/profile">Profile</a></button></li>
+            <li><button><a href="/users/posts">Posts</a></button></li>
+            <li><button><a href="/users/likes">Likes</a></button></li>
+            <li><button><a href="/users/sign-out">Sign Out</a></button></li>
+        <% }else{ %>
+            <li><button><a href="/users/sign-in">Sign In</a></button></li>
+            <li><button><a href="/users/sign-up">Sign Up</a></button></li>
+        <% } %>
+        <li><button><a href="/">Home</a></button></li>
+    </ul>
 </header>
