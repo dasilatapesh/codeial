@@ -1,15 +1,9 @@
-body {
+html, body {
   margin: 0;
   color: red;
+  height: 100%;
   /* text-align: center; */ }
-  body #layout-main {
-    height: 100%;
-    background-color: azure; }
 
-li {
-  list-style: none;
-  display: inline;
-  margin: 5px; }
-
-ul {
-  padding-left: 0; }
+#layout-main {
+  height: 100%;
+  background-color: azure; }

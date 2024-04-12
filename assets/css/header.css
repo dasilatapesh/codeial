@@ -1,0 +1,25 @@
+header {
+  background-color: blue;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 60px;
+  padding: 0 15px 0 15px; }
+  header #proj-name h1 {
+    color: white; }
+
+#links ul li {
+  display: inline-block;
+  list-style-type: none; }
+  #links ul li:hover {
+    transform: scale(1.08); }
+
+a {
+  margin-left: 15px;
+  color: white;
+  text-decoration: none; }
+  a:hover {
+    color: #d5d5d5; }
+
+#profile {
+  text-transform: capitalize; }
