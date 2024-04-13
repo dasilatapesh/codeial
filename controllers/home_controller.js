@@ -18,7 +18,15 @@ module.exports.home = function(req, res){
     // }); //this function do not shows user info 
 
     //populate the user
-    Post.find({}).populate('user').exec()
+    Post.find({})
+    .populate('user')
+    .populate({
+        path: 'comments',
+        populate: {
+            path: 'user',
+        }
+    })
+    .exec()
     .then(posts => {
         res.render('home', {
             title: 'Codial | Home',
