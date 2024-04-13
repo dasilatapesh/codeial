@@ -7,7 +7,6 @@ const postsSchema = new Mongoose.Schema({
     user: {
         type: Mongoose.Schema.Types.ObjectId,
         ref: 'User',
-        required: true,
     }
 },
 {

@@ -6,7 +6,7 @@ const userController = require('../controllers/users_controller')
 
 router.get('/profile', passport.checkAuthentication, userController.profile);
 
-router.get('/posts', passport.checkAuthentication,userController.posts);
+router.get('/posts', passport.checkAuthentication,userController.showMyPosts);
 
 router.get('/likes', passport.checkAuthentication,userController.likes);
 

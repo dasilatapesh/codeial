@@ -2,4 +2,14 @@
 
     <h1>Codeial / users / <%= title %></h1>
 
-   
+    <div id="posts-lists-container">
+        <ul>
+            <% for(post of posts){%>
+                <li>
+                    <p>
+                        <%=post.content%><br>Created At: <%= post.createdAt%>
+                    </p>
+                </li>
+            <%}%>
+        </ul>
+    </div>

@@ -6,10 +6,19 @@ module.exports.profile = function(req, res){
     });
 }
 
-module.exports.posts = function(req, res){
+//show my post only
+module.exports.showMyPosts = function(req,res){
+    Posts.find({user: req.user._id})
+   .then((posts)=>{
     return res.render('posts', {
-        title: "Posts",
+        title: "Codial | Posts",
+        posts: posts,
     });
+   })
+   .catch((err)=>{
+       console.log("Error in creating post:", err);
+       return res.redirect("back");
+   });
 }
 
 module.exports.likes = function(req, res){
