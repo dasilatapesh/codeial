@@ -1,5 +1,5 @@
 const Post = require('../models/posts.js');
-
+const User = require('../models/user.js');
 //shows posts in home and shows user posted
 module.exports.home = function(req, res){
     // console.log(req.cookies);
@@ -28,9 +28,18 @@ module.exports.home = function(req, res){
     })
     .exec()
     .then(posts => {
-        res.render('home', {
-            title: 'Codial | Home',
-            posts: posts,
+        User.find({})
+        .then(users => {
+            res.render('home', {
+                title: 'Codial | Home',
+                posts: posts,
+                allUsers: users,
+            });
+        })
+        .catch(err => {
+            // Handle error
+            console.error(err);
+            res.status(500).send('Internal Server Error');
         });
     })
     .catch(err => {

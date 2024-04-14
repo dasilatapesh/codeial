@@ -63,7 +63,7 @@ module.exports.deleteComment = function(req, res){
 
         } else {
             console.log("Unauthorized");
-            return res.redirect('back');
+            return res.status(401).send('unauthorized');
         }
     })
     .catch((err) => {

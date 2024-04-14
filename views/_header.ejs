@@ -5,7 +5,7 @@
     <div id="links">
         <ul>
             <% if(locals.user) { %>
-                <li><a href="/users/profile/" id="profile"><%= user.name %></a></li>
+                <li><a href="/users/profile/<%= user._id%>" id="profile"><%= user.name %></a></li>
                 <li><a href="/users/posts">Posts</a></li>
                 <li><a href="/users/likes">Likes</a></li>
                 <li><a href="/users/sign-out">Sign Out</a></li>

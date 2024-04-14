@@ -1,9 +1,46 @@
 const userSchema = require("../models/user");
 const Posts = require("../models/posts.js");
+const User = require("../models/user.js");
+
+
 module.exports.profile = function(req, res){
-    return res.render('profile', {
-        title: "ProfileCodeial",
+    User.findById(req.params.id)
+    .then(user => {
+        return res.render('profile', {
+            title: "Codeial | Profile ",
+            userProfile: user,
+        });
+    })
+    .catch((err) => {
+        console.log(err);
+        return res.redirect('back');
     });
+}
+
+//update
+module.exports.updateProfile = function(req,res){
+    if(req.user.id==req.params.id){
+        User.findOne({email: req.body.email})
+        .then((user)=>{
+            if(user && user.id!=req.user.id){
+                return res.status(500).send('email already exist');
+            }
+            User.findByIdAndUpdate(req.params.id, req.body)
+            .then(()=>{
+                return res.redirect('back')
+            })
+            .catch((err)=>{
+                console.log(err);
+                return res.status(401).send('Some error',err);
+            });
+        })
+        .catch((err)=>{
+            console.log(err);
+            return res.status(401).send('Some Error',err);
+        });  
+    }else {
+        return res.status(401).send('Unauthorized');
+    }
 }
 
 //show my post only

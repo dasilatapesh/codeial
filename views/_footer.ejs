@@ -4,7 +4,7 @@
     </div>
     <div>
         <% if(locals.user) { %>
-            <a href="/users/profile/">Profile</a>
+            <a href="/users/profile/<%= user._id%>">Profile</a>
             <%}%>
             <a href="/">Home</a>
 
