@@ -1,0 +1,12 @@
+<li>
+    <p>
+        <small>
+            <!-- check if the user id and the post id are same -->
+            <% if(locals.user && locals.user.id == comment.user.id){%>
+                <a href="/comments/destroy/<%= comment._id %>">X</a>
+            <%}%>
+        </small>
+        <%=comment.content%><br>
+        <small>Commented by: <%=comment.user.name%></small> 
+    </p>
+</li>
