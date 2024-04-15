@@ -3,59 +3,101 @@ const Posts = require("../models/posts.js");
 const User = require("../models/user.js");
 
 
-module.exports.profile = function(req, res){
-    User.findById(req.params.id)
-    .then(user => {
+module.exports.profile = async function(req, res){
+    try{
+        const user = await User.findById(req.params.id);
+
         return res.render('profile', {
             title: "Codeial | Profile ",
             userProfile: user,
         });
-    })
-    .catch((err) => {
+
+    }catch(err){
         console.log(err);
         return res.redirect('back');
-    });
+    }
+    // User.findById(req.params.id)
+    // .then(user => {
+    //     return res.render('profile', {
+    //         title: "Codeial | Profile ",
+    //         userProfile: user,
+    //     });
+    // })
+    // .catch((err) => {
+    //     console.log(err);
+    //     return res.redirect('back');
+    // });
 }
 
 //update
-module.exports.updateProfile = function(req,res){
-    if(req.user.id==req.params.id){
-        User.findOne({email: req.body.email})
-        .then((user)=>{
+module.exports.updateProfile = async function(req,res){
+
+    try{
+        if(req.user.id==req.params.id){
+            const user = await User.findOne({email: req.body.email});
             if(user && user.id!=req.user.id){
                 return res.status(500).send('email already exist');
             }
-            User.findByIdAndUpdate(req.params.id, req.body)
-            .then(()=>{
-                return res.redirect('back')
-            })
-            .catch((err)=>{
-                console.log(err);
-                return res.status(401).send('Some error',err);
-            });
-        })
-        .catch((err)=>{
-            console.log(err);
-            return res.status(401).send('Some Error',err);
-        });  
-    }else {
-        return res.status(401).send('Unauthorized');
+
+            const updatedUser = await User.findByIdAndUpdate(req.params.id, req.body);
+        }else{
+            return res.status(401).send('Unauthorized');
+        }
+
+        return res.redirect('back');
+
+    }catch(err){
+        console.log(err);
+        return res.status(401).send('Some Error',err);
     }
+    // if(req.user.id==req.params.id){
+    //     User.findOne({email: req.body.email})
+    //     .then((user)=>{
+    //         if(user && user.id!=req.user.id){
+    //             return res.status(500).send('email already exist');
+    //         }
+    //         User.findByIdAndUpdate(req.params.id, req.body)
+    //         .then(()=>{
+    //             return res.redirect('back')
+    //         })
+    //         .catch((err)=>{
+    //             console.log(err);
+    //             return res.status(401).send('Some error',err);
+    //         });
+    //     })
+    //     .catch((err)=>{
+    //         console.log(err);
+    //         return res.status(401).send('Some Error',err);
+    //     });  
+    // }else {
+    //     return res.status(401).send('Unauthorized');
+    // }
 }
 
 //show my post only
-module.exports.showMyPosts = function(req,res){
-    Posts.find({user: req.user._id})
-   .then((posts)=>{
-    return res.render('posts', {
-        title: "Codial | Posts",
-        posts: posts,
-    });
-   })
-   .catch((err)=>{
-       console.log("Error in creating post:", err);
-       return res.redirect("back");
-   });
+module.exports.showMyPosts = async function(req,res){
+
+    try{
+        const posts = await Posts.find({user: req.user._id});
+        return res.render('posts', {
+            title: "Codial | Posts",
+            posts: posts,
+        });
+    }catch(err){
+        console.log("Error in creating post:", err);
+        return res.redirect("back");
+    }
+//     Posts.find({user: req.user._id})
+//    .then((posts)=>{
+//     return res.render('posts', {
+//         title: "Codial | Posts",
+//         posts: posts,
+//     });
+//    })
+//    .catch((err)=>{
+//        console.log("Error in creating post:", err);
+//        return res.redirect("back");
+//    });
 }
 
 module.exports.likes = function(req, res){
@@ -87,26 +129,43 @@ module.exports.signin = function(req,res){
 }
 
 //get signup data
-module.exports.create = function(req,res){
-    if(req.body.password != req.body.confirm_password){
+module.exports.create = async function(req,res){
+
+    try{
+
+        if(req.body.password != req.body.confirm_password){
+            res.status(403).send('Password not match');
+        }
+
+        const user = await userSchema.findOne({email: req.body.email})
+
+        if(!user){
+            userSchema.create(req.body)
+        }else{
+            return res.status(400).send('user already exists');
+        }
+
+        return res.redirect("/users/sign-in");
+    }catch(err){
+        console.log("Error in creating user while Sign up:", err);
         return res.redirect("back");
     }
     
-    userSchema.findOne({email: req.body.email})
-        .then(user => {
-            if(!user){
-                userSchema.create(req.body)
-            }else {
-                return Promise.reject("User already exists");
-            }
-        })
-        .then(() => {
-            return res.redirect("/users/sign-in");
-        })
-        .catch(err => {
-            console.log("Error in creating user while Sign up:", err);
-            return res.redirect("back");
-        });
+    // userSchema.findOne({email: req.body.email})
+    //     .then(user => {
+    //         if(!user){
+    //             userSchema.create(req.body)
+    //         }else {
+    //             return Promise.reject("User already exists");
+    //         }
+    //     })
+    //     .then(() => {
+    //         return res.redirect("/users/sign-in");
+    //     })
+    //     .catch(err => {
+    //         console.log("Error in creating user while Sign up:", err);
+    //         return res.redirect("back");
+    //     });
 };
 
 //sign-in and create a session for user
