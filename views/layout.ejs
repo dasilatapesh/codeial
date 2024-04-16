@@ -6,11 +6,17 @@
     <link rel="stylesheet" type="text/css" href="/css/layout.css">
     <link rel="stylesheet" type="text/css" href="/css/header.css">
     <link rel="stylesheet" type="text/css" href="/css/footer.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/noty/3.1.4/noty.min.css" integrity="sha512-0p3K0H3S6Q4bEWZ/WmC94Tgit2ular2/n0ESdfEX8l172YyQj8re1Wu9s/HT9T/T2osUw5Gx/6pAZNk3UKbESw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/noty/3.1.4/noty.js" integrity="sha512-mgZL3SZ/vIooDg2mU2amX6NysMlthFl/jDbscSRgF/k3zmICLe6muAs7YbITZ+61FeUoo1plofYAocoR5Sa1rQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <title> <%= title %></title>
     <%- style %>
 </head>
 <body>
     <%- include('_header'); -%>
+
+    <!-- <% if(locals.flash.success && locals.flash.success.length>0) { %>
+        <h5> <%=flash.success%></h5>
+    <% } %> -->
 
     <main id="layout-main">
     <%- body %>
@@ -19,5 +25,25 @@
     <%- include('_footer'); -%>
 
     <%- script %>
+    <script>
+        <% if(locals.flash.success && locals.flash.success.length>0) { %>
+            new Noty({
+                theme: 'relax',
+                text: '<%=flash.success%>',
+                type:'success',
+                layout: 'topRight',
+                timeout: 1500,
+            }).show();
+        <% } %>
+        <% if(locals.flash.error && locals.flash.error.length>0) { %>
+            new Noty({
+                theme: 'relax',
+                text: '<%=flash.error%>',
+                type:'error',
+                layout: 'topRight',
+                timeout: 1500,
+            }).show();
+        <% } %>
+    </script>
 </body>
 </html>
