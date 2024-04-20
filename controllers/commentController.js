@@ -1,23 +1,35 @@
 const Post = require('../models/posts');
 const Comment = require('../models/comment');
 
-module.exports.create = function(req, res){
+module.exports.create = async function(req, res){
     try{
         const data = req.body;
 
-        const post = Post.findById(data.post);
+        const post = await Post.findById(data.post);
 
-        const comment = Comment.create({
+        const comment = await Comment.create({
             content: data.content,
             post: data.post,
             user: req.user._id,
         });
-
-        console.log('Comment added successfully');
-            //add comment in comment array
+        if(!comment){
+            console.log('comment not created');
+        }
+         //add comment in comment array
         post.comments.push(comment._id);
-
         post.save();
+        req.flash('success', 'Comment added successfully');
+        await comment.populate('user' , 'name email');
+        if(req.xhr){
+            return res.status(200).json({
+                data:{
+                    comment: comment,
+                    success: req.flash('success'),
+                },
+                message: 'Comment created',
+            });
+        }
+        console.log('refreshed'); 
         return res.redirect('back');
     }catch(err){
         console.log(err);
@@ -76,6 +88,18 @@ module.exports.deleteComment = async function(req, res){
         }else {
             console.log("Unauthorized");
             return res.status(401).send('unauthorized');
+        }
+
+        req.flash('success', 'Successfully Deleted Comment');
+
+        if(req.xhr){
+            return res.status(200).json({
+                data: {
+                    commentId: id,
+                    success: req.flash('success'),
+                },
+                message: "Comment deleted"
+            });
         }
 
         return res.redirect('back');

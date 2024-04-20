@@ -18,19 +18,27 @@ module.exports.createPost = async function(req, res){
 
     try{
         const data = req.body;
-
         const post = await Post.create({
                     content: data.content,
                     user: req.user._id,
-                });
-
-        console.log("posted successfully");
-
-        return res.redirect('back');
-
+            });
+        await post.populate('user', 'name email');
+        req.flash('success', 'Successfully added post.');
+        //to receive the xhr request
+        if(req.xhr){
+            return res.status(200).json({
+                data:{
+                    post: post,
+                    success: req.flash('success'),
+                },
+                message: 'Post created',
+            });
+        }
+        return res.redirect('back'); //if not ajax req redirect back
     }catch(err){
         console.log("Error in creating post:", err);
-        return res.status(500).send('Error');
+        req.flash('error','Error creating post!!!');
+        return res.status(500).send('Error creating post');
     }
 };
 
@@ -55,6 +63,18 @@ module.exports.deletePost = async function(req, res){
 
             const commentDeleted = await Comment.deleteMany({post: id});
 
+            req.flash('success','Sucessfully Deleted Post');
+
+            if(req.xhr){
+                return res.status(200).json({
+                    data: {
+                        post_id: req.params.id,
+                        success: req.flash('success'),
+                    },
+                    message: "Post deleted"
+                });
+            }
+
             console.log("Deleted Succesfully");
         }else{
             console.log("Unauthorized");
@@ -62,7 +82,8 @@ module.exports.deletePost = async function(req, res){
         }
         return res.redirect('back');   
     }catch(err){
-        console.log("Error in creating post:", err);
+        console.log("Error in deleting post:", err);
+        req.flash('error','Error deleting post!!!');
         return res.status(500).send('Error');
     }
     
