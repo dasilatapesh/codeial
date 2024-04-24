@@ -1,7 +1,8 @@
 const userSchema = require("../models/user");
 const Posts = require("../models/posts.js");
 const User = require("../models/user.js");
-
+const fs = require('fs');
+const path = require('path');
 
 module.exports.profile = async function(req, res){
     try{
@@ -34,21 +35,54 @@ module.exports.updateProfile = async function(req,res){
 
     try{
         if(req.user.id==req.params.id){
-            const user = await User.findOne({email: req.body.email});
-            if(user && user.id!=req.user.id){
-                return res.status(500).send('email already exist');
-            }
+            //to check if email already in database or not
+            // console.log(req.body);
+            // const userExists = await User.findOne({email: req.body.email});
+            // if(userExists && userExists.id != req.user.id){
+            //     console.log('Email present in database');
+            //     return res.status(500).send('Email already exists');
+            // }
 
-            const updatedUser = await User.findByIdAndUpdate(req.params.id, req.body);
+            // const updatedUser = await User.findByIdAndUpdate(req.params.id, req.body);
+            const user = await User.findById(req.params.id);
+            // console.log(User.avatarPath);
+            User.uploadAvatar(req, res, async function(err){
+                if(err){
+                    console.log('********Multer Error*********',err);
+                    return res.status(400).send(err);
+                }
+                // At this point, req.file contains the uploaded file
+                // and req.body contains other form data
+
+                // Check if email already exists
+                const newEmail = req.body.email;
+                const userExists = await User.findOne({email: newEmail});
+                if(userExists && userExists.id != req.user.id) {
+                    console.log('Email present in database');
+                    return res.status(500).send('Email already exists');
+                }
+                console.log(req.body);
+                // console.log(user);
+                user.name = req.body.name;
+                user.email = req.body.email;
+                if(req.file){
+                    if(user.avatar && user.avatar!='undefined/undefined'){
+                        fs.unlinkSync(path.join(__dirname,'..',user.avatar));
+                    }
+                    // console.log(req.file);
+                    //saving path uploaded file in users avatar field
+                    user.avatar = User.avatarPath+'/'+req.file.filename;
+                }
+                user.save();
+                req.flash('success',"Profile Updated");
+                return res.redirect('back');
+            });
         }else{
             return res.status(401).send('Unauthorized');
         }
-
-        return res.redirect('back');
-
     }catch(err){
         console.log(err);
-        return res.status(401).send('Some Error',err);
+        return res.status(401).send('Some Error: '+err);
     }
     // if(req.user.id==req.params.id){
     //     User.findOne({email: req.body.email})
@@ -140,7 +174,7 @@ module.exports.create = async function(req,res){
         const user = await userSchema.findOne({email: req.body.email})
 
         if(!user){
-            userSchema.create(req.body)
+            await userSchema.create(req.body)
         }else{
             return res.status(400).send('user already exists');
         }

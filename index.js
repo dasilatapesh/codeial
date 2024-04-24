@@ -21,7 +21,11 @@ app.use((sassMiddleware({
     prefix: '/css',
 })));
 app.use(express.urlencoded({ extended: false }));
+app.use(express.json());
 app.use(express.static('./assets'));
+//make upload path available to browser
+app.use('/uploads', express.static(__dirname+'/uploads'));
+
 app.use(cookieParser());
 app.use(expressLayouts);
 

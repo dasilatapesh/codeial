@@ -2,24 +2,29 @@
 <h1><%= title %></h1>
 
 <% if(user.id == userProfile.id){%>
-    <p><%=userProfile.name%></p>
-    <p><%=userProfile.email%></p>
+    <p>Profile Picture:</p>
+    <img src="<%= userProfile.avatar %>" alt="<%= userProfile.name %>" width="100px" height="auto">
+    <p>Name: <%=userProfile.name%></p>
+    <p>Email: <%=userProfile.email%></p>
     <!-- if user matches then show form -->
     <h3>
         Edit your Profile: 
     </h3>
-    <form action="/users/update/<%= userProfile.id %>" method="POST">
+    <form action="/users/update/<%= userProfile.id %>" method="POST" enctype="multipart/form-data">
         <label for="name">Change name:</label>
         <input type="text" name="name" value="<%=userProfile.name%>"  id="name" style="display: block;margin-bottom:8px;" required>
-
         <label for="email">Change email:</label>
         <input type="email" name="email" id="email" value="<%=userProfile.email%>" style="display: block;margin-bottom:8px;" required>
+        <label for="avatar">Change photo:</label>
+        <input type="file" name="avatar" id="avatar" placeholder="Upload Pic">
         <input type="submit" value="Update" style="display: block;">
     </form>
 <%}else{%>
     <!-- else show only profile -->
-    <p><%=userProfile.name%></p>
-    <p><%=userProfile.email%></p>
+    <p>Profile Picture:</p>
+    <img src="<%= userProfile.avatar %>" alt="<%= userProfile.name %>" width="100px" height="auto">
+    <p>Name: <%=userProfile.name%></p>
+    <p>Email: <%=userProfile.email%></p>
 <%}%>
 
 <!-- <label for="password">Change password:</label>

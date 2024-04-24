@@ -7,4 +7,5 @@ html, body {
 #layout-main {
   height: calc(100% - 60px - 80px);
   background-color: #7cebeb;
+  padding-left: 20px;
   overflow: scroll; }
