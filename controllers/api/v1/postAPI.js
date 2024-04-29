@@ -1,4 +1,5 @@
 const Posts = require('../../../models/posts');
+const Comment = require('../../../models/comment');
 
 module.exports.getPosts = async function(req, res, next){
     try {
@@ -19,20 +20,31 @@ module.exports.getPosts = async function(req, res, next){
 module.exports.destroyPosts = async function(req, res){
     try {
         const id = req.params.id;
-        const post = await Posts.findByIdAndDelete(id);
+        const post = await Posts.findById(id);
         if(!post){
             return res.status(404).json({
                 message: 'Post not found',
-            });  
+            });
         }
-        return res.status(200).json({
-            message: 'Post deleted!',
-            post,
-        });
+        // console.log();
+        if(post.user == req.user.id){
+            const comment = await Comment.deleteMany({post: post._id});
+            const deletedPost = await Posts.findByIdAndDelete(id);
+            return res.status(200).json({
+                message: 'Post deleted and associated comment deleted!!',
+                post: post,
+                comment: comment,
+            });
+        }else{
+            return res.status(422).json({
+                message: 'Unauthorized to access. Sign-in to access this page.',
+            });
+        }
+        
     } catch (error) {
         console.log(error);
         return res.status(500).json({
-            message: 'Error!',
+            message: 'Internal server Error!',
             error,
         });
     }
