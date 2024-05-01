@@ -17,5 +17,5 @@ exports.newComment = (comment) => {
         }
         console.log('Delivered->',info);
         return;
-    })
+    });
 }

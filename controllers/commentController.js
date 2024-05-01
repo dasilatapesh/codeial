@@ -1,6 +1,9 @@
 const Post = require('../models/posts');
 const Comment = require('../models/comment');
 const commentsMailer = require('../mailers/commentMailer');
+const kue = require('kue');
+const emailWorker = require('../worker/commentEmailWorker');
+
 
 module.exports.create = async function(req, res){
     try{
@@ -21,7 +24,14 @@ module.exports.create = async function(req, res){
         post.save();
         req.flash('success', 'Comment added successfully');
         await comment.populate('user' , 'name email');
-        commentsMailer.newComment(comment);
+        // commentsMailer.newComment(comment);
+
+        const job = emailWorker.create('emails', comment).save(function(err){
+            if(err){
+                console.log(err);
+            }
+            console.log(job.id);
+        });
         if(req.xhr){
             return res.status(200).json({
                 data:{
