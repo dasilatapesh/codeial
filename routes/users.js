@@ -17,6 +17,15 @@ router.get('/sign-in',userController.signin);
 
 router.post('/create', userController.create);
 
+router.get('/forgot-password', userController.renderForgotPass);
+
+router.post('/send-email', userController.sendEmail);
+
+router
+.route('/reset-password/')
+.get(userController.changePassForm)
+.post(userController.changeAndResetPass);
+
 //use passport as a middleware to authenticate
 router.post('/create-session',passport.authenticate(
     'local', //strategy

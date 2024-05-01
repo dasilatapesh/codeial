@@ -1,8 +1,11 @@
 const userSchema = require("../models/user");
 const Posts = require("../models/posts.js");
 const User = require("../models/user.js");
+const PassToken = require("../models/passToken.js");
+const crypto = require('crypto');
 const fs = require('fs');
 const path = require('path');
+const PassTokenMailer = require('../mailers/forgotPassMailer.js');
 
 module.exports.profile = async function(req, res){
     try{
@@ -216,3 +219,118 @@ module.exports.destroySession = function(req, res, next){
         res.redirect('/');
     });
 }
+
+module.exports.renderForgotPass = function(req, res){
+    if(req.isAuthenticated()){
+        return res.redirect("/users/profile");
+    }
+    return res.render('forgot_pass',{
+        title: "Forgot Password"
+    });
+}
+
+module.exports.sendEmail = async function(req, res){
+    try {
+        console.log('req.body.email-> ',req.body.email);
+        const user = await User.findOne({email: req.body.email});
+        if(!user){
+            return res.status(400).send('Invalid Email Id');
+        }
+        const userInPassToken = await PassToken.findOne({user: user});
+        const accessToken = crypto.randomBytes(50).toString('hex');
+        console.log('accessToken -> ',accessToken);
+        let createPassToken = "";
+        if(!userInPassToken){
+            createPassToken = await PassToken.create({
+            user: user,
+            accessToken: accessToken,
+        });
+        }else{
+            createPassToken = await PassToken.findOneAndUpdate(
+                { user: user },
+                { accessToken: accessToken, isValid: true },
+                { new: true } // This option returns the updated document
+            );
+        }
+
+        createPassToken = await createPassToken.populate('user', 'email name');
+        console.log('createPassTOken -> ',createPassToken);
+        PassTokenMailer.resetPass(createPassToken);
+        req.flash('success',"Email sent succesfully!");
+        return res.redirect('/users/sign-in');
+    } catch (error) {
+        console.log(error);
+        if(error){
+            return res.status(500).send('Internal Server Error');
+        }
+    }
+}
+
+module.exports.changePassForm = async function(req, res){
+    try {
+        const accessToken = req.query.accessToken;
+        //check if accessToken provided or not
+        if (!accessToken) {
+            return res.status(400).send('Access token is missing');
+        }
+        // Implement logic to validate accessToken (e.g., check if it exists in the database)
+        let passToken = await PassToken.findOne({ accessToken: accessToken });
+
+        if (!passToken || !passToken.isValid) {
+            return res.status(401).send('Link Expired');
+        }
+
+        passToken = await passToken.populate('user', 'name email');
+
+        // console.log(passToken);
+
+        return res.render('reset_password',{
+            title: 'Reset-Password',
+            passToken: passToken,
+        });
+
+    } catch (error) {
+        console.log(error);
+        if(error){
+            return res.status(500).send('Internal Server Error');
+        }
+    }
+}
+
+
+module.exports.changeAndResetPass = async function(req, res){
+    try {
+        const accessToken = req.query.accessToken;
+        const password = req.body.password;
+        const confirmPassword = req.body.confirmPassword;
+
+        if(password !== confirmPassword){
+            req.flash('error',"Password Mismatch Re-try!");
+            return res.redirect('back');
+        }
+
+        const passToken = await PassToken.findOne({accessToken: accessToken});
+
+        if(!passToken.isValid){
+            req.flash('error', "Invalid accessToken");
+            return res.redirect('/users/sign-in');
+        }
+
+        const user = passToken.user;
+
+        const updatedUser = await User.findOneAndUpdate(user,{password:password},{new:true});
+
+        const updatedPassToken = await PassToken.findOneAndUpdate(passToken, {isValid: false}, {new:true});
+
+        console.log(updatedPassToken);
+
+        req.flash('success',"Password Updated");
+
+        return res.redirect('/users/sign-in');        
+    } catch (error) {
+        console.log(error);
+        if(error){
+            return res.status(500).send('Internal Server Error');
+        }
+    }
+};
