@@ -52,16 +52,18 @@ module.exports.home = async function(req, res){
     
 
     try{
+        console.log('Home controller');
         let posts =  await Post.find({})
         .sort('-createdAt')
         .populate('user')
         .populate({
             path: 'comments',
             options: { sort: { createdAt: -1 } }, // Sort comments in descending order of creation dat
-            populate: {
-                path: 'user',
-            }
-        })
+            populate:[
+            {path: 'user'},
+            {path: 'likes'}
+            ]
+        }).populate('likes');
 
         let user = await User.find({});
 

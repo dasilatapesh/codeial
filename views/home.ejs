@@ -36,3 +36,10 @@
 </div>
 
 <script src="/js/homePost.js" type="application/javascript"></script>
+<script src="/js/toggleLikes.js" type="application/javascript"></script>
+<script>
+    $('.toggle-like-button').each(function(){
+        let self = this;
+        let toggleLike = new ToggleLike(self);
+    });
+</script>

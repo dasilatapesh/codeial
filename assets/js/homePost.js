@@ -14,6 +14,7 @@ newPostForm.submit(function(e){
             let newPost = newPostDom(data.data.post);
             $('#posts-lists-container>ul').prepend(newPost); //this prepend function will append at the starting of the list
             deletePost($(' .delete-post-button', newPost)); // Pass the delete button as a context to the deletePost function //to add delete button in post dynamically
+            new ToggleLike($(' .toggle-like-button', newPost));
             new Noty({
                 theme: 'relax',
                 text: data.data.success,
@@ -43,7 +44,10 @@ let newPostDom = function(post){
 
             </small>
             ${post.content}<br>
-            <small>Posted by: ${post.user.name}</small>   
+            <small>Posted by: ${post.user.name}</small>
+            <small>
+                <a class="toggle-like-button" data-likes="0" href="/likes/toggle/?id=${ post._id}&type=Post">0 Likes</a>
+            </small> 
         </p>
         <div class="post-comment">
   
@@ -111,6 +115,7 @@ newCommentForm.submit(function(e){
             console.log(`#post-comments-${data.data.comment.post}`);
             $(`#post-comments-${data.data.comment.post}`).prepend(newComment); //this prepend function will append at the starting of the list
             deleteComment($(' .delete-comment-button', newComment));
+            new ToggleLike($(' .toggle-like-button', newComment));
             new Noty({
                 theme: 'relax',
                 text: data.data.success,
@@ -137,7 +142,10 @@ const newCommentDOM = function(comment){
 
         </small>
         ${comment.content}<br>
-        <small>Commented by: ${comment.user.name}</small> 
+        <small>Commented by: ${comment.user.name}</small>
+        <small>
+                <a class="toggle-like-button" data-likes="0" href="/likes/toggle/?id=${comment._id}&type=Comment">0 Likes</a>
+        </small> 
     </p>
 </li>`);
 }

@@ -7,6 +7,13 @@
             <%}%>
         </small>
         <%=comment.content%><br>
-        <small>Commented by: <%=comment.user.name%></small> 
+        <small>Commented by: <%=comment.user.name%></small><br>
+        <small>
+            <%if(locals.user){%>
+                <a class="toggle-like-button" data-likes="<%=comment.likes.length%>" href="/likes/toggle/?id=<%=comment._id%>&type=Comment"><%=comment.likes.length%> Likes</a>
+            <%}else{%>
+                <%=comment.likes.length%> Likes
+            <%}%>
+        </small>
     </p>
 </li>

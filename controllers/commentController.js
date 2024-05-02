@@ -3,6 +3,7 @@ const Comment = require('../models/comment');
 const commentsMailer = require('../mailers/commentMailer');
 const kue = require('kue');
 const emailWorker = require('../worker/commentEmailWorker');
+const Likes = require('../models/likes');
 
 
 module.exports.create = async function(req, res){
@@ -25,6 +26,7 @@ module.exports.create = async function(req, res){
         req.flash('success', 'Comment added successfully');
         await comment.populate('user' , 'name email');
         // commentsMailer.newComment(comment);
+        console.log("***********",comment,"********");
 
         const job = emailWorker.create('emails', comment).save(function(err){
             if(err){
@@ -87,9 +89,15 @@ module.exports.deleteComment = async function(req, res){
 
         //check user who posted and user who is requesting to delete are same
         if(comment.user.toString() === req.user.id){
-            //fetech post id
+            //fetch post id
             const postId = comment.post;
-            // Delete the post
+
+            //delete associated likes of the comment
+            await Likes.deleteMany({
+                likeable: comment,
+                onModel: 'Comment'
+            });
+            // Delete the comment
             const deletedComment = await comment.deleteOne();
 
             console.log("Deleted Succesfully");
