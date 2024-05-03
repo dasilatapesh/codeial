@@ -27,5 +27,11 @@
     <p>Email: <%=userProfile.email%></p>
 <%}%>
 
+<% if(user.id != userProfile.id){%>
+    <a class="make-friend-btn" data-profile-id="<%= userProfile.id %>" href="/friendship/togglefriend/<%=userProfile.id%>">Make Friend</a>
+<%}%>
+
 <!-- <label for="password">Change password:</label>
 <input type="password" name="password" id="password" placeholder="Enter password..." style="display: block;margin-bottom:8px;"> -->
+
+<script src="/js/toggleFriend.js"></script>

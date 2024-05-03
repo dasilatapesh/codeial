@@ -12,7 +12,7 @@ module.exports.profile = async function(req, res){
         const user = await User.findById(req.params.id);
 
         return res.render('profile', {
-            title: "Codeial | Profile ",
+            title: "Codeial|Profile ",
             userProfile: user,
         });
 
@@ -171,7 +171,8 @@ module.exports.create = async function(req,res){
     try{
 
         if(req.body.password != req.body.confirm_password){
-            res.status(403).send('Password not match');
+            req.flash('error',"Paword Mismatch Re-try!");
+            return res.redirect("back")
         }
 
         const user = await userSchema.findOne({email: req.body.email})

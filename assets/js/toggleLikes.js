@@ -17,8 +17,10 @@ class ToggleLike{
                 url: $(self).attr('href'),
             })
             .done(function(data) {
+                console.log(data);
                 let likesCount = parseInt($(self).attr('data-likes'));
                 console.log(likesCount);
+                console.log(data.data.deleted);
                 if (data.data.deleted == true){
                     likesCount -= 1;
                     
