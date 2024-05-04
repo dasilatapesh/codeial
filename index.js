@@ -15,6 +15,11 @@ const customMiddleWare = require('./config/customMiddleWare');
 //passport-jwt-strategy
 const PassportJwt = require('./config/passport-jwt-strategy');
 const googleAuthStrategy = require('./config/passport-google-oauth2-strategy');
+const chatServer = require('http').Server(app);
+const chatSocket = require('./config/chatSocket').chatSocket(chatServer);
+
+chatServer.listen(5000);
+console.log('Chat Server running on port: 5000');
  
 app.use((sassMiddleware({
     src: './assets/scss',
