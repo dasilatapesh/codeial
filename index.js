@@ -1,7 +1,7 @@
 const express = require('express');
 const cookieParser = require('cookie-parser');
 const app = express();
-const port = process.env.PORT || 8000 ;
+const port = process.env.PORT
 const expressLayouts = require('express-ejs-layouts');
 const db = require("./config/mongoose");
 //used for sessoin cookie
@@ -17,17 +17,20 @@ const PassportJwt = require('./config/passport-jwt-strategy');
 const googleAuthStrategy = require('./config/passport-google-oauth2-strategy');
 const chatServer = require('http').Server(app);
 const chatSocket = require('./config/chatSocket').chatSocket(chatServer);
-
+const env = require('./config/environment');
+const path = require('path');
 chatServer.listen(5000);
 console.log('Chat Server running on port: 5000');
  
-app.use((sassMiddleware({
-    src: './assets/scss',
-    dest: './assets/css',
-    debug: true,
-    outputStyle: 'extended',
-    prefix: '/css',
-})));
+if(env.name=='development'){
+    app.use((sassMiddleware({
+        src: path.join(__dirname, env.asset_path, 'scss'),
+        dest:path.join(__dirname, env.asset_path, 'css'),
+        debug: true,
+        outputStyle: 'extended',
+        prefix: '/css',
+    })));
+}
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 app.use(express.static('./assets'));
@@ -50,7 +53,7 @@ app.set('views', './views');
 app.use(session({
     name: 'codial',
     //TODO change the secret before deployemnt in productoin mode
-    secret: 'blaSomething',
+    secret: env.session_cookie_key,
     //if user not logged in or no identitiy established or no session initialized 
     //in that case we do not need to save extra data in session cookie
     saveUninitialized: false,
@@ -61,7 +64,7 @@ app.use(session({
     },
     store: MongoStore.create(
         {
-            mongoUrl: "mongodb://127.0.0.1:27017/codeial_developement",
+            mongoUrl: env.db_url,
             autoRemove: "disabled"
         },
         function(err){
